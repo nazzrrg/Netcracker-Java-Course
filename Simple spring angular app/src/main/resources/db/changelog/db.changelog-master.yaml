@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.changelog-master.yaml
+  - changeSet:
+      id: 1
+      author: java
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(50)
+                  constraints:
+                    unique: false
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: java
+      comment: "init changes"
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: name
+                  value: "John"
+              - column:
+                  name: email
+                  value: "John@domain.com"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: name
+                  value: "Julie"
+              - column:
+                  name: email
+                  value: "Julie@domain.com"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: name
+                  value: "Jennifer"
+              - column:
+                  name: email
+                  value: "Jennifer@domain.com"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: name
+                  value: "Helen"
+              - column:
+                  name: email
+                  value: "Helen@domain.com"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "5"
+              - column:
+                  name: name
+                  value: "Rachel"
+              - column:
+                  name: email
+                  value: "Rachel@domain.com"
