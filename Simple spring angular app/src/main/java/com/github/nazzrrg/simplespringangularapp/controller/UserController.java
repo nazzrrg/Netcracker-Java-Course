@@ -3,16 +3,12 @@ package com.github.nazzrrg.simplespringangularapp.controller;
 import com.github.nazzrrg.simplespringangularapp.UserRepository;
 import com.github.nazzrrg.simplespringangularapp.model.User;
 import com.github.nazzrrg.simplespringangularapp.controller.UserService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService service;
