@@ -1,6 +1,6 @@
 package com.github.nazzrrg.simplespringangularapp.controller;
 
-import com.github.nazzrrg.simplespringangularapp.UserRepository;
+import com.github.nazzrrg.simplespringangularapp.repo.UserRepository;
 import com.github.nazzrrg.simplespringangularapp.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
