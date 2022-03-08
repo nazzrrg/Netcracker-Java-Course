@@ -91,3 +91,55 @@ databaseChangeLog:
               - column:
                   name: email
                   value: "Rachel@domain.com"
+  - changeSet:
+      id: 3
+      author: java
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(20)
+                  constraints:
+                    unique: false
+                    nullable: false
+  - changeSet:
+      id: 4
+      author: java
+      comment: "init roles"
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: name
+                  value: "ROLE_USER"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: name
+                  value: "ROLE_MODERATOR"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: name
+                  value: "ROLE_ADMIN"

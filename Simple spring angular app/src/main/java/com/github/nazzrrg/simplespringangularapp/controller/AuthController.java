@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials = "true")
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -53,7 +53,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getName(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -72,7 +72,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByName(signUpRequest.getUsername())) {
+        if (userRepository.existsByName(signUpRequest.getName())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
@@ -85,24 +85,17 @@ public class AuthController {
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
+        User user = new User(signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> strRoles = signUpRequest.getRole();
+        //Set<String> strRoles = signUpRequest.getRole();
+        Set<String> strRoles = null;
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
-            Role userRole = null;
-            //Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    //.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            if (roleRepository.findByName(ERole.ROLE_USER).isEmpty()) {
-                userRole = new Role(ERole.ROLE_USER);
-                roleRepository.save(userRole);
-            }
-            else {
-                userRole = roleRepository.findByName(ERole.ROLE_USER).get();
-            }
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
