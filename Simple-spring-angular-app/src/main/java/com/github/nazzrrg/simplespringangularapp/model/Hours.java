@@ -14,7 +14,7 @@ public class Hours {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(length = 3)
+    @Column(length = 10)
     private String weekday;
     private LocalTime start_time;
     private LocalTime end_time;

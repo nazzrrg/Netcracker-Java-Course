@@ -4,6 +4,7 @@ import com.github.nazzrrg.simplespringangularapp.model.Cafe;
 import com.github.nazzrrg.simplespringangularapp.model.Grade;
 import com.github.nazzrrg.simplespringangularapp.model.Hours;
 import com.github.nazzrrg.simplespringangularapp.model.User;
+import com.github.nazzrrg.simplespringangularapp.payload.response.MessageResponse;
 import com.github.nazzrrg.simplespringangularapp.service.CafeService;
 import com.github.nazzrrg.simplespringangularapp.service.UserService;
 import com.github.nazzrrg.simplespringangularapp.utils.JSONMapper;
@@ -11,9 +12,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -58,9 +61,9 @@ public class CafeController {
         return service.getById(id);
     }
     @PostMapping("/update")
-    public String updateCafeterias(@RequestParam("geo") String geo,
-                                   @RequestParam("res") Integer res,
-                                   @Value("${netcracker.app.mapAPI}") String apikey) throws Exception {
+    public ResponseEntity<MessageResponse> updateCafeterias(@RequestParam("geo") String geo,
+                                                            @RequestParam("res") Integer res,
+                                                            @Value("${netcracker.app.mapAPI}") String apikey) throws Exception {
         String request = String.format(
                 "https://search-maps.yandex.ru/v1/?text=кофе,Санкт-Петербург,%s&results=%d&type=biz&lang=ru_RU&apikey=%s",
                 geo, res, apikey);
@@ -68,12 +71,17 @@ public class CafeController {
         final String str = restTemplate.getForObject(request, String.class);
         JSONObject jo = (JSONObject) new JSONParser().parse(str);
         JSONArray cafeterias = (JSONArray) jo.get("features");
+        int count = 0;
         for (int i =0; i< cafeterias.size(); i++) {
             JSONObject joCafe = (JSONObject) cafeterias.get(i);
             Cafe cafe = JSONMapper.toCafe(joCafe);
-            System.out.println(cafe);
+            if (service.create(cafe)) {
+                count++;
+            }
         }
 
-        return cafeterias.toJSONString();
+        return ResponseEntity
+                .created(URI.create("http://localhost/cafeterias/update?geo="+geo+"&res="+res))
+                .body(new MessageResponse("Out of "+cafeterias.size()+" found successfully added "+count+" coffee shops"));
     }
 }

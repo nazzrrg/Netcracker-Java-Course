@@ -1,11 +1,11 @@
 package com.github.nazzrrg.simplespringangularapp.model;
 
 public enum Day {
-    MON,
-    TUE,
-    WED,
-    THU,
-    FRI,
-    SAT,
-    SUN
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday
 }

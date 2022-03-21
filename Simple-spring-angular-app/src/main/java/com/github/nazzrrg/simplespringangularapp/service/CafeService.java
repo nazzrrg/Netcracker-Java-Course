@@ -15,8 +15,12 @@ public class CafeService {
         this.repository = repository;
     }
 
-    public void create(@RequestBody Cafe cafe) {
-        repository.save(cafe);
+    public boolean create(@RequestBody Cafe cafe) {
+        if (!repository.existsById(cafe.getId())) {
+            repository.save(cafe);
+            return true;
+        }
+        return false;
     }
     public List<Cafe> getAll() {
         return (List<Cafe>) repository.findAll();

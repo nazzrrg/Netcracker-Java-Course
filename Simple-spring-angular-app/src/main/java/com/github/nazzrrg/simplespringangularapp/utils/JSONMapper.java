@@ -9,27 +9,51 @@ import org.json.simple.JSONObject;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class JSONMapper {
+    private static boolean checkEveryday(JSONObject availability) {
+        if (availability.get("Everyday") != null) return true;
+        else return false;
+    }
+    private static boolean checkTwentyFourHours(JSONObject availability) {
+        if (availability.get("TwentyFourHours") != null) return true;
+        else return false;
+    }
     private static List<Hours> parseWorkingHours(JSONObject jo) {
         List<Hours> workingHours = new ArrayList<>();
 
         JSONArray availabilities = (JSONArray) jo.get("Availabilities");
-        try {
-            JSONObject availability = (JSONObject) availabilities.get(0);
-            availability.get("Everyday"); // check everyday flag
-            JSONArray intervals = (JSONArray) availability.get("Intervals");
-            String from = ((JSONObject) intervals.get(0)).get("from").toString();
-            String to = ((JSONObject) intervals.get(0)).get("to").toString();
-            for (Day day: Day.values()) {
-                workingHours.add(new Hours(day.name(),
-                        LocalTime.parse(from),
-                        LocalTime.parse(to)));
+        for (int i = 0; i< availabilities.size(); i++) {
+            JSONObject availability = (JSONObject) availabilities.get(i);
+            String from;
+            String to;
+
+            if (checkTwentyFourHours(availability)) {
+                from = "00:00";
+                to = "23:59";
             }
-        }
-        catch (Exception e) {
-            for (int i=0; i<availabilities.size(); i++) {
-                // учесть отсутствие дней в списке (выходные)
+            else {
+                JSONArray intervals = (JSONArray) availability.get("Intervals");
+                from = ((JSONObject) intervals.get(0)).get("from").toString();
+                to = ((JSONObject) intervals.get(0)).get("to").toString();
+            }
+            if (checkEveryday(availability)) {
+                for (Day day: Day.values()) {
+                    workingHours.add(new Hours(day.name(),
+                            LocalTime.parse(from),
+                            LocalTime.parse(to)));
+                }
+            }
+            else {
+                for (String day: (Set<String>)availability.keySet()) {
+                    try {
+                        String checkDay = Day.valueOf(day).name();
+                        workingHours.add(new Hours(checkDay,
+                                LocalTime.parse(from),
+                                LocalTime.parse(to)));
+                    } catch (IllegalArgumentException e) {}
+                }
             }
         }
 
@@ -40,7 +64,8 @@ public class JSONMapper {
 
         JSONObject geometry = (JSONObject) jo.get("geometry");
         JSONArray coordinates = (JSONArray) geometry.get("coordinates");
-        cafe.setLocation(coordinates.toString());
+        String location = coordinates.toString();
+        cafe.setLocation(location.substring(1,location.length()-1));
         JSONObject properties = (JSONObject) jo.get("properties");
         cafe.setName(properties.get("name").toString());
         cafe.setDescription(properties.get("description").toString());
